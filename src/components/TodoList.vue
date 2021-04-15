@@ -15,10 +15,13 @@
       </label>
     <ul>
       <li v-bind:key="item.id" v-for="item in list" :class="{show: item.show}">
-        <div class="card mb-3" v-bind:class="currentStyle">
+        <div class="card mb-3" v-bind:class="item.style">
           <div class="card-header" @click="remove(item.id)">X</div>
+          <div :class="{done: !item.done}">✔️</div>
           <div class="card-body">
-            <h3 class="card-title" :class="{done: item.done}" @click="isDone(item.id)">{{item.title}}</h3>
+            <h3 class="card-title"
+              :class="item.style"
+              @click="isDone(item.id)">{{item.title}}</h3>
             <p class="card-text">{{item.text}}</p>
           </div>
         </div>
@@ -29,7 +32,7 @@
 </template>
 
 <script>
-import random_item from '../utils/utils'
+import {random_item} from '../utils/utils'
 
 
 export default {
@@ -47,7 +50,6 @@ export default {
         ? JSON.parse(window.localStorage.getItem('todos'))
         : [],
       cardStyles: ['text-white bg-primary', 'text-white bg-secondary', 'text-white bg-success', 'text-white bg-danger', 'text-white bg-dark', 'text-dark bg-warning', 'text-dark bg-info', 'text-dark bg-light'],
-      currentStyle: this.getRandomStyle(this.cardStyles)
     }
   },
   methods: {
@@ -77,12 +79,14 @@ export default {
         id: Math.ceil(Math.random() * 10000),
         done: false,
         show: true,
+        style: this.getRandomStyle()
       }
       this.list.push(newItem)
       this.setLS(this.list)
       this.value = ''
       this.textValue = ''
       this.alertMessage = ''
+      console.log(newItem);
     },
 
     remove(id) {
@@ -127,7 +131,7 @@ export default {
     },
 
     getRandomStyle() {
-      random_item(this.cardStyles)
+      return random_item(this.cardStyles)
     }
   }
 }
@@ -179,12 +183,18 @@ a {
 }
 
 .done {
-  color: green;
+  display: none;
 }
 
 .card {
   width: 400px;
   margin: 0 auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  transition: all .2s linear;
+}
+
+.card:hover {
+  transform: scale(1.01);
 }
 
 .btn {
